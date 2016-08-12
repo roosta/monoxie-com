@@ -15,10 +15,25 @@
 (defonce app-state (atom {:text "Hello world!"}))
 
 (defn svg-init []
-  (let [svg (js/Snap. "#svg")]
+  (let [svg (js/Snap. "#svg")
+        ]
     (.load js/Snap "/svg/splotshy.svg"
            (fn [el]
              (.append svg el)
+             (let [path (.select svg "#runner2")]
+               ; (.animate path #js {:transform "s0,50t0,50"} 1000000)
+               (.animate path #js {:transform "s0,50"} 1000000)
+               ; (.animate path #js {:transform "t0,100"} 1000000)
+               )
+             
+             #_(.hover svg
+                     (fn [] (.animate svg #js {:opacity 0} 1000) (.-bounce js/mina))
+                     (fn [] (.animate svg #js {:opacity 1} 1000) (.-bounce js/mina)))
+
+             ; (.log js/console (.select svg "#runner1"))
+
+
+
              ))
 
     ))
@@ -38,12 +53,11 @@
   )
 
 (defn Page []
-  ; (let [timer (timer. (rand-int 10000))]
     (r/create-class
      {:display-name "monoxie.com"
       :component-did-mount #(svg-init)
-      ; :component-will-unmount #(.dispose timer)
-      ; :component-did-mount #(.init js/smoothscroll)
+      ; :component-will-unmount #()
+      ; :component-did-mount #()
       ; :component-will-unmount #()
       :reagent-render
       (fn []
@@ -53,8 +67,7 @@
         )}))
 
 
-(r/render-component [Page]
-                    (. js/document (getElementById "app")))
+(r/render-component [Page] (. js/document (getElementById "app")))
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on

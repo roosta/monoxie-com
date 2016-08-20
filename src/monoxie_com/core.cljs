@@ -37,15 +37,12 @@
   []
   (let [window (dom/getWindow)
         svg (js/Snap. "#svg")
-        fltr (.filter svg (.blur js/Snap.filter 3 3)) 
+        fltr (.filter svg (.blur js/Snap.filter 4 4)) 
         ]
     (doseq [i (range 4)
             j (range 30)]
-      (-> (.rect svg 
-                 (+ (* j 64) 6)
-                 (+ (* i 64) 64)
-                 58 58)
-          (.attr #js {:fill 
+      (as-> (.rect svg (+ (* j 63.75) 6) (+ (* i 63.75) 12) 58 58) v
+        (.attr v #js {:fill 
                       (case i
                         0 "#e5fcc2"
                         1 "#9de0ad"
@@ -53,8 +50,8 @@
                         3 "#547980"
                         "#ffffff")
                       :filter fltr
-                      })))
-    (.log js/console fltr)
+                      })
+        (.hover v #(.attr v #js {:filter nil}))))
     ))
 
 (def style
@@ -81,7 +78,7 @@
       (fn []
         [:div#wrapper
          [:style style]
-         [:svg#svg {:width "100%"  :height 500}]]
+         [:svg#svg {:width "100%"  :height 268}]]
         )}))
 
 

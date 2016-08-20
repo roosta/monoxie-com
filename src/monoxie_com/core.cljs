@@ -1,8 +1,9 @@
 (ns monoxie-com.core
   (:require 
     [reagent.core :as r :refer [atom]]
-     [garden.units :as u]
+     [goog.dom :as dom]
      [cljsjs.snapsvg :as snap]
+     [garden.units :as u]
      [garden.core :as g]
      [goog.labs.userAgent.device :as device]
      [garden.selectors :as s]
@@ -14,7 +15,78 @@
 ;; define your app data so that it doesn't get over-written on reload
 (defonce app-state (atom {:text "Hello world!"}))
 
-(defn svg-init []
+; (println (.-innerWidth window))
+
+(defn get-square-width
+  [width]
+  (loop [x 70]
+    (if (= (mod width x) 0)
+      x
+      (recur (dec x))
+      ))
+  )
+
+(get-square-width 1017)
+
+(defn get-square-count
+  [wwidth swidth]
+  (wwidth / swidth)
+
+  )
+(defn svg-init
+  []
+  (let [window (dom/getWindow)
+        svg (js/Snap. "#svg")
+        ; square (.rect svg 6 0 58 58)
+        ]
+    (doseq [i (range 4)
+            j (range 30)]
+      (-> (.rect svg (* j 64) (* i 64) 58 58)
+          (.attr #js {:fill 
+                      (case i
+                        0 "#e5fcc2"
+                        1 "#9de0ad"
+                        2 "#45ada8"
+                        3 "#547980"
+                        "#ffffff")})))))
+
+(def style
+  (g/css
+    [:body
+     {:background-color "#594f4f"
+      }]
+    [:#wrapper
+     {:display "flex"
+      :height "100vh"
+      :justify-content "center"
+      :align-items "center"}]
+    )
+  )
+
+(defn Page []
+    (r/create-class
+     {:display-name "monoxie.com"
+      :component-did-mount #(svg-init)
+      ; :component-will-unmount #()
+      ; :component-did-mount #()
+      ; :component-will-unmount #()
+      :reagent-render
+      (fn []
+        [:div#wrapper
+         [:style style]
+         [:svg#svg {:width "100%"  :height 500}]]
+        )}))
+
+
+(r/render-component [Page] (. js/document (getElementById "app")))
+
+(defn on-js-reload []
+  ;; optionally touch your app-state to force rerendering depending on
+  ;; your application
+  ;; (swap! app-state update-in [:__figwheel_counter] inc)
+)
+
+#_(defn svg-init []
   (let [svg (js/Snap. "#svg")
         ]
     (.load js/Snap "/svg/splotshy.svg"
@@ -38,39 +110,3 @@
 
     ))
 
-(def style
-  (g/css
-    [:body
-     {:background-color "#1C1B19"
-      }]
-    [:#wrapper
-     {:display "flex"
-      :height "100vh"
-      :justify-content "center"
-      :align-items "center"}]
-    [:#svg 
-     ])
-  )
-
-(defn Page []
-    (r/create-class
-     {:display-name "monoxie.com"
-      :component-did-mount #(svg-init)
-      ; :component-will-unmount #()
-      ; :component-did-mount #()
-      ; :component-will-unmount #()
-      :reagent-render
-      (fn []
-        [:div#wrapper
-         [:style style]
-         [:svg#svg {:width 322 :height 552 :viewBox "0 0 322 552"}]]
-        )}))
-
-
-(r/render-component [Page] (. js/document (getElementById "app")))
-
-(defn on-js-reload []
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
-)

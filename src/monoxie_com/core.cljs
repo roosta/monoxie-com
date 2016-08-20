@@ -37,18 +37,25 @@
   []
   (let [window (dom/getWindow)
         svg (js/Snap. "#svg")
-        ; square (.rect svg 6 0 58 58)
+        fltr (.filter svg (.blur js/Snap.filter 3 3)) 
         ]
     (doseq [i (range 4)
             j (range 30)]
-      (-> (.rect svg (* j 64) (* i 64) 58 58)
+      (-> (.rect svg 
+                 (+ (* j 64) 6)
+                 (+ (* i 64) 64)
+                 58 58)
           (.attr #js {:fill 
                       (case i
                         0 "#e5fcc2"
                         1 "#9de0ad"
                         2 "#45ada8"
                         3 "#547980"
-                        "#ffffff")})))))
+                        "#ffffff")
+                      :filter fltr
+                      })))
+    (.log js/console fltr)
+    ))
 
 (def style
   (g/css

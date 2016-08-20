@@ -51,7 +51,9 @@
                         "#ffffff")
                       :filter fltr
                       })
-        (.hover v #(.attr v #js {:filter nil}))))
+        (.hover v 
+                #(.attr v #js {:filter nil})
+                #(.attr v #js {:filter fltr}))))
     ))
 
 (def style

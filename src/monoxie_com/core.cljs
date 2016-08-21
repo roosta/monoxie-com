@@ -26,7 +26,6 @@
       ))
   )
 
-(get-square-width 1017)
 
 (defn get-square-count
   [wwidth swidth]
@@ -38,11 +37,12 @@
   (let [window (dom/getWindow)
         svg (js/Snap. "#svg")
         fltr (.filter svg (.blur js/Snap.filter 4 4)) 
+        filterChild (aget fltr "node" "firstChild")
         ]
     (doseq [i (range 4)
             j (range 30)]
-      (as-> (.rect svg (+ (* j 63.75) 6) (+ (* i 63.75) 12) 58 58) v
-        (.attr v #js {:fill 
+      (as-> (.rect svg (+ (* j 63.75) 6) (+ (* i 63.75) 12) 58 58) square
+        (.attr square #js {:fill 
                       (case i
                         0 "#e5fcc2"
                         1 "#9de0ad"
@@ -51,10 +51,15 @@
                         "#ffffff")
                       :filter fltr
                       })
-        (.hover v 
-                #(.attr v #js {:filter nil})
-                #(.attr v #js {:filter fltr}))))
-    ))
+        (.hover square (fn []
+                    (.attr square #js {:filter nil})
+                    ; (.animate square #js {:opacity 0} 1000 )
+                    ; (.animate js/Snap 0 10 (fn [value] (aset filterChild "attributes" 0 "value" (str value "," value))) 1000)
+                    )
+                  (fn []
+                    (.attr square #js {:filter fltr})
+                    ; (.animate js/Snap 0 10 (fn [value] (aset filterChild "attributes" 0 "value" (str value "," value))) 1000)
+                    ))))))
 
 (def style
   (g/css

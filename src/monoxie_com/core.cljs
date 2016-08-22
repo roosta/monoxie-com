@@ -15,7 +15,10 @@
 ;; define your app data so that it doesn't get over-written on reload
 (defonce app-state (atom {:text "Hello world!"}))
 
-; (println (.-innerWidth window))
+(defn test-repl
+  []
+  (.log js/console "hello from emacs")
+  )
 
 (defn get-square-width
   [width]
@@ -25,7 +28,6 @@
       (recur (dec x))
       ))
   )
-
 
 (defn get-square-count
   [wwidth swidth]

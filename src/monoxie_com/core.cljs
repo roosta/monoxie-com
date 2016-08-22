@@ -1,5 +1,5 @@
 (ns monoxie-com.core
-  (:require 
+  (:require
     [reagent.core :as r :refer [atom]]
      [goog.dom :as dom]
      [cljsjs.snapsvg :as snap]

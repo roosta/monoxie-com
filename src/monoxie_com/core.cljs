@@ -4,8 +4,10 @@
    [reagent.debug :as d]
    [goog.dom :as dom]
    [cljsjs.snapsvg :as snap]
+   [goog.events :as events]
    [garden.units :as u]
    [garden.core :as g]
+   [goog.events :as events]
    [goog.labs.userAgent.device :as device]
    [garden.selectors :as s]
    [garden.stylesheet :as stylesheet]
@@ -16,26 +18,38 @@
 ;; define your app data so that it doesn't get over-written on reload
 (defonce app-state (atom {:text "Hello world!"}))
 
-(defn test-repl
+
+(defn clamp
+  "clamp passed value to predefined max/min"
+  [value bounds]
+  (cond
+    (> value bounds) bounds
+    (< value 0) 0
+    :else
+    value))
+
+(defn svg-init!
   []
-  (.log js/console "hello from emacs")
-  )
+  (let [svg (js/Snap. "#svg")]
+    (.load js/Snap
+           "/svg/fishies.svg"
+           (fn [el]
+             (let [g (.select el "#linearGradient14228")]
+               (.append svg el)
+                ; (.animate g #js {:x1 0 :y1 100 :x2 0 :y2 100 } 2000 (.-linear js/mina))
+               ;; (.attr g #js {:x1 0 :y1 10})
+                (d/log (.attr g))
+               (events/listen
+                js/window
+                (.-MOUSEMOVE events/EventType)
+                #(.attr g #js {:x1 (/ (.-clientX %) 4) :y1 (/ (.-clientY %) 4)})
+                )
+               )
 
-(defn get-square-width
-  [width]
-  (loop [x 70]
-    (if (= (mod width x) 0)
-      x
-      (recur (dec x))
-      ))
-  )
+    )
 
-(defn get-square-count
-  [wwidth swidth]
-  (wwidth / swidth)
-
-  )
-(defn svg-init
+  )))
+#_(defn svg-init
   []
   (let [window (dom/getWindow)
         svg (js/Snap. "#svg")
@@ -71,7 +85,7 @@
 (def style
   (g/css
     [:body
-     {:background-color "#594f4f"
+     {:background-color "#d6e1c7"
       }]
     [:#wrapper
      {:display "flex"
@@ -84,7 +98,7 @@
 (defn Page []
     (r/create-class
      {:display-name "monoxie.com"
-      :component-did-mount #(svg-init)
+      :component-did-mount #(svg-init!)
       ; :component-will-unmount #()
       ; :component-did-mount #()
       ; :component-will-unmount #()
@@ -92,7 +106,7 @@
       (fn []
         [:div#wrapper
          [:style style]
-         [:svg#svg {:width "100%"  :height 268}]]
+         [:svg#svg {:width 475  :height 675}]]
         )}))
 
 

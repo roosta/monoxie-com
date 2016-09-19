@@ -1,14 +1,15 @@
 (ns monoxie-com.core
   (:require
-    [reagent.core :as r :refer [atom]]
-     [goog.dom :as dom]
-     [cljsjs.snapsvg :as snap]
-     [garden.units :as u]
-     [garden.core :as g]
-     [goog.labs.userAgent.device :as device]
-     [garden.selectors :as s]
-     [garden.stylesheet :as stylesheet]
-     ))
+   [reagent.core :as r :refer [atom]]
+   [reagent.debug :as d]
+   [goog.dom :as dom]
+   [cljsjs.snapsvg :as snap]
+   [garden.units :as u]
+   [garden.core :as g]
+   [goog.labs.userAgent.device :as device]
+   [garden.selectors :as s]
+   [garden.stylesheet :as stylesheet]
+   ))
 
 (enable-console-print!)
 
@@ -38,13 +39,13 @@
   []
   (let [window (dom/getWindow)
         svg (js/Snap. "#svg")
-        fltr (.filter svg (.blur js/Snap.filter 4 4)) 
-        filterChild (aget fltr "node" "firstChild")
+        fltr (.filter svg (.blur js/Snap.filter 4 4))
+        filter-child (aget fltr "node" "firstChild")
         ]
     (doseq [i (range 4)
             j (range 30)]
       (as-> (.rect svg (+ (* j 63.75) 6) (+ (* i 63.75) 12) 58 58) square
-        (.attr square #js {:fill 
+        (.attr square #js {:fill
                       (case i
                         0 "#e5fcc2"
                         1 "#9de0ad"
@@ -53,15 +54,19 @@
                         "#ffffff")
                       :filter fltr
                       })
-        (.hover square (fn []
-                    (.attr square #js {:filter nil})
-                    ; (.animate square #js {:opacity 0} 1000 )
-                    ; (.animate js/Snap 0 10 (fn [value] (aset filterChild "attributes" 0 "value" (str value "," value))) 1000)
-                    )
-                  (fn []
-                    (.attr square #js {:filter fltr})
-                    ; (.animate js/Snap 0 10 (fn [value] (aset filterChild "attributes" 0 "value" (str value "," value))) 1000)
-                    ))))))
+        (.hover square
+                (fn []
+                  ;; (.attr square #js {:filter nil})
+                  (.animate square #js {:transform "t0,10"} 200)
+                  ;; (d/log filter-child)
+                  ;; (.animate js/Snap 4 0 (fn [value] (aset filter-child "attributes" 0 "value" (str value "," value))) 200)
+                  )
+                (fn []
+                  ;; (.attr square #js {:filter fltr})
+                  (.animate square #js {:transform "t0,0"} 200)
+                  ;; (.animate square #js {:transform "t4,10"} 200)
+                  ;; (.animate js/Snap 0 4 (fn [value] (aset filter-child "attributes" 0 "value" (str value "," value))) 200)
+                  ))))))
 
 (def style
   (g/css
@@ -110,7 +115,7 @@
                (.animate path #js {:transform "s0,50"} 1000000)
                ; (.animate path #js {:transform "t0,100"} 1000000)
                )
-             
+
              #_(.hover svg
                      (fn [] (.animate svg #js {:opacity 0} 1000) (.-bounce js/mina))
                      (fn [] (.animate svg #js {:opacity 1} 1000) (.-bounce js/mina)))
@@ -122,4 +127,3 @@
              ))
 
     ))
-

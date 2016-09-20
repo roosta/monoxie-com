@@ -28,21 +28,54 @@
     :else
     value))
 
+(defn animate
+  [text-gradient]
+  (.animate text-gradient #js {:x1 100 :y1 100 :x2 0 :y2 0 } 10000 (.-linear js/mina)
+            #(.animate text-gradient #js {:x1 200 :y1 266 :x2 630 :y2 266} 10000 (.-linear js/mina) (fn [] (animate text-gradient))))
+  )
+
 (defn svg-init!
   []
   (let [svg (js/Snap. "#svg")]
     (.load js/Snap
            "/svg/fishies.svg"
            (fn [el]
-             (let [g (.select el "#linearGradient14228")]
+             (let [text-gradient (.select el "#linearGradient14228")
+                   p1 (.select el "#path14143")
+                   p2 (.select el "#path14454")
+                   p3 (.select el "#path14368")
+                   p4 (.select el "#path14164")
+                   p5 (.select el "#path14450")
+                   fins (.select el "#path14263")
+                   ]
                (.append svg el)
-                ; (.animate g #js {:x1 0 :y1 100 :x2 0 :y2 100 } 2000 (.-linear js/mina))
-               ;; (.attr g #js {:x1 0 :y1 10})
-                (d/log (.attr g))
+                ;; (.animate text-gradient #js {:x1 100 :y1 100 :x2 0 :y2 0 } 10000 (.-linear js/mina))
+               ;; (.attr text-gradient #js {:x1 0 :y1 10})
+               (animate text-gradient)
+               ;; (d/log t)
                (events/listen
                 js/window
                 (.-MOUSEMOVE events/EventType)
-                #(.attr g #js {:x1 (/ (.-clientX %) 4) :y1 (/ (.-clientY %) 4)})
+                (fn [e]
+                  (let [x (.-clientX e)
+                        y (.-clientY e)]
+                    (.transform p1 (str "t" (* x -0.005)
+                                       "," (* y -0.005)
+                                       "r" (* y -0.001)))
+                    (.transform p2 (str "t" (* x 0.005)
+                                        "," (* y 0.005)
+                                        "r" (* x 0.003)))
+                    (.transform p3 (str "t" (* x 0.005)
+                                        "," (* y 0.005)))
+                    (.transform p4 (str "t" (* x 0.01)
+                                        "r" (* y 0.01)))
+                    (.transform p5 (str "t" (* x -0.01)
+                                        "r" (* y -0.01)))
+                    (.transform fins (str "t" (* x 0.01)
+                                          "r" (* y 0.01))))
+                  )
+                ;; #(.transform t "t100,0")
+                #_(.attr text-gradient #js {:x1 (/ (.-clientX %) 4) :y1 (/ (.-clientY %) 4)})
                 )
                )
 
@@ -99,14 +132,13 @@
     (r/create-class
      {:display-name "monoxie.com"
       :component-did-mount #(svg-init!)
-      ; :component-will-unmount #()
+      :component-will-unmount #(events/removeAll js/window)
       ; :component-did-mount #()
-      ; :component-will-unmount #()
       :reagent-render
       (fn []
         [:div#wrapper
          [:style style]
-         [:svg#svg {:width 475  :height 675}]]
+         [:svg#svg {:width 550  :height 750}]]
         )}))
 
 

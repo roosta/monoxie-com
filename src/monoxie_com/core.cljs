@@ -47,12 +47,16 @@
                    p4 (.select el "#path14164")
                    p5 (.select el "#path14450")
                    fins (.select el "#path14263")
+                   matrix (js/Snap.Matrix.)
                    ]
                (.append svg el)
                 ;; (.animate text-gradient #js {:x1 100 :y1 100 :x2 0 :y2 0 } 10000 (.-linear js/mina))
                ;; (.attr text-gradient #js {:x1 0 :y1 10})
+               ;; (d/log matrix)
                (animate text-gradient)
-               ;; (d/log t)
+               ;; (.translate matrix 20 0)
+               ;; (.rotate matrix 45)
+               ;; (.animate fins #js {:transform matrix} 1000 (.-linear js/mina))
                (events/listen
                 js/window
                 (.-MOUSEMOVE events/EventType)
@@ -60,8 +64,8 @@
                   (let [x (.-clientX e)
                         y (.-clientY e)]
                     (.transform p1 (str "t" (* x -0.005)
-                                       "," (* y -0.005)
-                                       "r" (* y -0.001)))
+                                        "," (* y -0.005)
+                                        "r" (* y -0.001)))
                     (.transform p2 (str "t" (* x 0.005)
                                         "," (* y 0.005)
                                         "r" (* x 0.003)))
